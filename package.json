@@ -1,0 +1,34 @@
+{
+  "name": "mark-pro",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite --mode development",
+    "build": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.7.9",
+    "element-plus": "^2.9.3",
+    "nprogress": "^0.2.0",
+    "pinia": "^2.3.0",
+    "pinia-plugin-persistedstate": "^4.2.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "@types/nprogress": "^0.2.3",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue-jsx": "^4.1.1",
+    "less": "^4.2.1",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "vue-tsc": "^2.2.0"
+  }
+}
