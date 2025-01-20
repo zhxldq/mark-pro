@@ -1,8 +1,10 @@
 <template>
-    <div>hello,{{ userStore.$state.username }}</div>
+  <div>hello,{{ userStore.$state.username }}</div>
+  <el-button>11</el-button>
 </template>
 <script lang="ts" setup>
-import { useUserStore } from '@/store/user';
+import { useUserStore } from "@/store/user";
+
 const userStore = useUserStore();
 </script>
 <style scoped lang="scss"></style>
