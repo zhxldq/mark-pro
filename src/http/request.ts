@@ -10,9 +10,12 @@ interface BaseResponse<T = any> {
 }
 
 const service = axios.create({
-    baseURL: import.meta.env.VITE_APP_BASE_API,
+    baseURL: import.meta.env.VITE_APP_DEV_USE_MOCK
+        ? import.meta.env.VITE_APP_MOCK_BASEURL
+        : import.meta.env.VITE_APP_API_BASEURL,
     timeout: 15000
 });
+
 // axios实例拦截请求
 service.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
@@ -57,7 +60,7 @@ const requestInstance = <T = any>(config: AxiosRequestConfig): Promise<T> => {
     const conf = config;
     return new Promise((resolve, reject) => {
         service.request<any, AxiosResponse<BaseResponse>>(conf).then((res: AxiosResponse<BaseResponse>) => {
-            const data = res.data; // 如果data.code为错误代码返回message信息
+            const data: any = res; // 如果data.code为错误代码返回message信息
             if (data.code != 0) {
                 ElMessage({
                     message: data.message,
