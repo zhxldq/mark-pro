@@ -8,14 +8,12 @@ interface BaseResponse<T = any> {
     data: T;
     status?: number | string;
 }
-
 const service = axios.create({
     baseURL: import.meta.env.VITE_APP_DEV_USE_MOCK
         ? import.meta.env.VITE_APP_MOCK_BASEURL
         : import.meta.env.VITE_APP_API_BASEURL,
     timeout: 15000
 });
-
 // axios实例拦截请求
 service.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
@@ -29,13 +27,13 @@ service.interceptors.request.use(
 service.interceptors.response.use(
     (response: AxiosResponse) => {
         if (response.status === 200) {
-            return response.data;
+            return response;
         }
         ElMessage({
             message: getMessageInfo(response.status),
             type: 'error'
         });
-        return response.data;
+        return response;
     },
     // 请求失败
     (error: any) => {
@@ -54,13 +52,13 @@ service.interceptors.response.use(
     }
 );
 
-// 相当于二次响应拦截
+// 此处相当于二次响应拦截
 // 为响应数据进行定制化处理
 const requestInstance = <T = any>(config: AxiosRequestConfig): Promise<T> => {
     const conf = config;
     return new Promise((resolve, reject) => {
         service.request<any, AxiosResponse<BaseResponse>>(conf).then((res: AxiosResponse<BaseResponse>) => {
-            const data: any = res; // 如果data.code为错误代码返回message信息
+            const data = res.data; // 如果data.code为错误代码返回message信息
             if (data.code != 0) {
                 ElMessage({
                     message: data.message,
@@ -72,7 +70,7 @@ const requestInstance = <T = any>(config: AxiosRequestConfig): Promise<T> => {
                     message: data.message,
                     type: 'success'
                 }); // 此处返回data信息 也就是 api 中配置好的 Response类型
-                resolve(data.data as T);
+                resolve(data as T);
             }
         });
     });
@@ -91,7 +89,7 @@ export function del<T = any, U = any>(config: AxiosRequestConfig, url: string, d
     return requestInstance({ ...config, url, method: 'DELETE', data: data });
 }
 
-// 一般后端返回的数据结构
+// 一般的后端返回的数据结构
 // {
 //     'code': 1,
 //     'message': '成功',
