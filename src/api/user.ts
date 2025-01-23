@@ -1,4 +1,4 @@
-import { post } from '@/http/request';
+import { get, post } from '@/http/request';
 
 export type LoginRequest = {
     username: string;
@@ -20,4 +20,8 @@ export const userLogin = async (data?: LoginRequest) => {
 
 export const refreshUserInfo = async (data?: reLoginRequest) => {
     return post<LoginResponse>({}, '/getUserInfo', data);
+};
+
+export const getUserList = async () => {
+    return get({}, '/getUserList');
 };
