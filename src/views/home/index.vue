@@ -27,6 +27,7 @@
             @current-change="handleCurrentChange"
             @size-change="handleSizeChange"
         />
+        <tag :text="'2025'"></tag>
     </div>
 </template>
 
