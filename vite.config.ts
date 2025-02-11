@@ -10,6 +10,19 @@ import ElementPlus from 'unplugin-element-plus/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
+import visualizer from 'rollup-plugin-visualizer';
+import { createHtmlPlugin } from 'vite-plugin-html';
+import externalGlobals from 'rollup-plugin-external-globals';
+import iconfontPlugin from './vite-plugin-iconfont';
+
+const globals = externalGlobals({
+    moment: 'moment',
+    'video.js': 'videojs',
+    jspdf: 'jspdf',
+    xlsx: 'XLSX',
+    echart: 'echart'
+});
+
 export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     // 获取当前工作目录
     const root = process.cwd();
@@ -31,6 +44,20 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
             }
         },
         plugins: [
+            createHtmlPlugin({
+                inject: {
+                    data: {
+                        monentscript:
+                            '<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.js"></script>',
+                        videoscript:
+                            '<script src="https://cdn.jsdelivr.net/npm/video.js@7.14.3/dist/video.min.js"></script>',
+                        echartscript: '<script src="https://cdn.jsdelivr.net/npm/echarts@5.2.1/echarts"></script>',
+                        jspdfscript: '<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/pdf.js"></script>',
+                        xlsxscript:
+                            '<script src="https://cdn.jsdelivr.net/npm/xlsx@0.17.4/dist/xlsx.full.min.js"></script>'
+                    }
+                }
+            }),
             // Vue模板文件编译插件
             vue(),
             // jsx文件编译插件
@@ -62,6 +89,12 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
             }),
             Icons({
                 autoInstall: true
+            }),
+            iconfontPlugin({
+                url: 'https://at.alicdn.com/t/c/font_3998853_9s8zi7m260o.js', // 替换为您的 Iconfont URL
+                outputDir: 'src/assets/iconfont', // 输出目录
+                fileName: 'iconfont.js', // 文件名
+                jsonFileName: 'iconfont.json' // JSON 文件名
             })
         ],
         // 运行后本地预览的服务器
@@ -108,13 +141,34 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
                 input: {
                     index: fileURLToPath(new URL('./index.html', import.meta.url))
                 },
-                // 静态资源分类打包
+                external: ['moment', 'video.js', 'jspdf', 'xlsx', 'echart'],
+                plugins: [visualizer({ open: true }), globals],
+                treeshake: {
+                    preset: 'recommended'
+                },
+                //experimentalLogSideEffects: true,
                 output: {
-                    format: 'esm',
-                    chunkFileNames: 'static/js/[name]-[hash].js',
-                    entryFileNames: 'static/js/[name]-[hash].js',
-                    assetFileNames: 'static/[ext]/[name]-[hash].[ext]'
+                    experimentalMinChunkSize: 20 * 1024,
+                    manualChunks: (id: string) => {
+                        if (id.includes('html-canvans')) {
+                            return 'html-canvans';
+                        }
+                        if (id.includes('node_modules')) {
+                            return 'vendor'; // 第三方库打包在一起---根据实际情况进一步打包 有的库只用一次
+                        }
+                        return 'index'; //业务代码打包在一起
+                    },
+                    chunkFileNames: 'static/js/[name]-[hash].js', // 代码分割后文件名
+                    entryFileNames: 'static/js/[name]-[hash:6].js', // 入口文件名
+                    assetFileNames: 'static/[ext]/[name]-[hash].[ext]' // 静态资源文件名
                 }
+                // 静态资源分类打包
+                // output: {
+                //     format: 'esm',
+                //     chunkFileNames: 'static/js/[name]-[hash].js',
+                //     entryFileNames: 'static/js/[name]-[hash].js',
+                //     assetFileNames: 'static/[ext]/[name]-[hash].[ext]'
+                // }
             }
         },
         // 配置别名
