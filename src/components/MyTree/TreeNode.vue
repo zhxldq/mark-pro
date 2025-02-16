@@ -1,12 +1,22 @@
 <template>
     <div class="node-content" :style="{ paddingLeft: `${props.node.level * 16}px` }">
+        <img
+            :src="expandIcon"
+            :class="['node-icon', props.isExpanded && 'node-icon__expanded', props.node.isLeaf && 'node-icon__leaf']"
+            @click="handleToggleExpand(props.node)"
+        />
         <div class="node-label">{{ props.node.label }}</div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ITreeNodeProps } from './type';
+import { ITreeNodeProps, ITreeNodeEmit, ITreeNode } from './type';
+import expandIcon from '@/assets/expand.svg';
 const props = defineProps<ITreeNodeProps>();
+const emit = defineEmits<ITreeNodeEmit>();
+const handleToggleExpand = (node: ITreeNode) => {
+    emit('toggleExpanded', node);
+};
 onMounted(() => {});
 </script>
 <style scoped lang="less">
@@ -16,5 +26,15 @@ onMounted(() => {});
     padding: 5px;
     gap: 5px;
     cursor: pointer;
+}
+.node-icon {
+    width: 0.8em;
+    height: 0.8em;
+}
+.node-icon__expanded {
+    transform: rotate(90deg);
+}
+.node-icon__leaf {
+    display: none;
 }
 </style>

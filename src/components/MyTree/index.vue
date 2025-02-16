@@ -1,6 +1,12 @@
 <template>
     <div>
-        <TreeNode v-for="i in flattenTree" :key="i.key" :node="i"></TreeNode>
+        <TreeNode
+            v-for="node in flattenTree"
+            :key="node.key"
+            :node="node"
+            :is-expanded="computedIsExpanded(node)"
+            @toggleExpanded="handleToggleExpand"
+        ></TreeNode>
     </div>
 </template>
 
@@ -10,14 +16,17 @@ import TreeNode from './TreeNode.vue';
 const props = withDefaults(defineProps<ITreeProps>(), {
     keyField: 'key',
     labelField: 'label',
-    childrenField: 'children'
+    childrenField: 'children',
+    defaultCheckedKeys: () => []
 });
 const treeData = ref<ITreeNode[]>([]);
+const expandedSet = ref(new Set(props.defaultExpandedKeys));
+
+const computedIsExpanded = computed(() => (node: ITreeNode) => expandedSet.value.has(node.key));
 watch(
     () => props.data,
     (newVal) => {
         treeData.value = formatTreeData(newVal, null);
-        console.log('data---', treeData.value);
     },
     {
         immediate: true
@@ -46,14 +55,18 @@ const flattenTree = computed(() => {
     function dfs(tree: ITreeNode[]) {
         tree.forEach((node) => {
             res.push(node);
-            if (node.children) dfs(node.children);
+            //if (node.children) dfs(node.children);
+            // 当前节点属于展开状态再深度遍历
+            if (expandedSet.value.has(node.key)) dfs(node.children);
         });
     }
     dfs(treeData.value);
     return res;
 });
-onMounted(() => {
-    console.log('flattenTree---', flattenTree.value);
-});
+function handleToggleExpand(node: ITreeNode) {
+    expandedSet.value.has(node.key) ? expandedSet.value.delete(node.key) : expandedSet.value.add(node.key);
+    console.log(expandedSet.value, 'expandedSet.value');
+}
+onMounted(() => {});
 </script>
 <style scoped lang="scss"></style>
