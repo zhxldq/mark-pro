@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    BranchTimeline: typeof import('./../src/components/BranchTimeline/index.vue')['default']
     Button: typeof import('./../src/components/Button/index.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElButton: typeof import('element-plus/es')['ElButton']
@@ -26,11 +27,16 @@ declare module 'vue' {
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTree: typeof import('element-plus/es')['ElTree']
+    FormItem: typeof import('./../src/components/FormItem/index.vue')['default']
     IEpClose: typeof import('~icons/ep/close')['default']
     IEpSetting: typeof import('~icons/ep/setting')['default']
     IEpUser: typeof import('~icons/ep/user')['default']
+    MyTree: typeof import('./../src/components/MyTree/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Tag: typeof import('./../src/components/Tag/index.vue')['default']
+    TimeLine: typeof import('./../src/components/TimeLine/index.vue')['default']
+    TreeNode: typeof import('./../src/components/MyTree/TreeNode.vue')['default']
+    TreeView: typeof import('./../src/components/TreeView/index.vue')['default']
   }
 }
