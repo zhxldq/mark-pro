@@ -5,7 +5,9 @@ export interface ITreeItem {
     label?: NodeKey;
     children?: ITreeItem[];
     isLeaf?: boolean;
+    // 是否选择
     isChecked?: boolean;
+    // 是否半选
     isHalfChecked?: boolean;
 }
 // 组件需要接收的Props

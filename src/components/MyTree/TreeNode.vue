@@ -9,7 +9,16 @@
             :class="['node-icon', props.isExpanded && 'node-icon__expanded', props.node.isLeaf && 'node-icon__leaf']"
             @click="handleToggleExpand(props.node)"
         />
-        <div class="node-label">{{ props.node.label }}</div>
+        <div class="node-label">
+            <input
+                v-if="props.showCheckbox"
+                type="checkbox"
+                :checked="props.node.isChecked"
+                :indeterminate="props.node.isHalfChecked"
+                @change="handleCheckChange(props.node)"
+            />
+            {{ props.node.label }}
+        </div>
     </div>
 </template>
 
@@ -23,6 +32,9 @@ const handleToggleExpand = (node: ITreeNode) => {
 };
 const handleSelectNode = (node: ITreeNode) => {
     emit('selectNode', node);
+};
+const handleCheckChange = (node: ITreeNode) => {
+    emit('onCheck', node);
 };
 onMounted(() => {});
 </script>
