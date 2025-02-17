@@ -1,5 +1,9 @@
 <template>
-    <div class="node-content" :style="{ paddingLeft: `${props.node.level * 16}px` }">
+    <div
+        :class="['node-content', props.isSelect && 'node-content__select']"
+        :style="{ paddingLeft: `${props.node.level * 16}px` }"
+        @click="handleSelectNode(props.node)"
+    >
         <img
             :src="expandIcon"
             :class="['node-icon', props.isExpanded && 'node-icon__expanded', props.node.isLeaf && 'node-icon__leaf']"
@@ -17,6 +21,9 @@ const emit = defineEmits<ITreeNodeEmit>();
 const handleToggleExpand = (node: ITreeNode) => {
     emit('toggleExpanded', node);
 };
+const handleSelectNode = (node: ITreeNode) => {
+    emit('selectNode', node);
+};
 onMounted(() => {});
 </script>
 <style scoped lang="less">
@@ -26,6 +33,12 @@ onMounted(() => {});
     padding: 5px;
     gap: 5px;
     cursor: pointer;
+    &:hover {
+        background-color: #f5f7fa;
+    }
+    .__select {
+        background-color: #f5f7fa;
+    }
 }
 .node-icon {
     width: 0.8em;

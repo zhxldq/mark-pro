@@ -5,22 +5,29 @@
             :key="node.key"
             :node="node"
             :is-expanded="computedIsExpanded(node)"
+            :is-select="computedIsSelected(node)"
             @toggleExpanded="handleToggleExpand"
+            @select-node="handleSelectNode"
         ></TreeNode>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ITreeProps, ITreeItem, ITreeNode, NodeKey } from './type';
+import { ITreeProps, ITreeItem, ITreeNode, NodeKey, IFsTreeEmitter } from './type';
 import TreeNode from './TreeNode.vue';
 const props = withDefaults(defineProps<ITreeProps>(), {
     keyField: 'key',
     labelField: 'label',
     childrenField: 'children',
-    defaultCheckedKeys: () => []
+    defaultCheckedKeys: () => [],
+    selectable: true,
+    multipleSelect: false
 });
+const emit = defineEmits<IFsTreeEmitter>();
 const treeData = ref<ITreeNode[]>([]);
 const expandedSet = ref(new Set(props.defaultExpandedKeys));
+const slectNodesMap = ref<Map<NodeKey, ITreeNode>>(new Map()); // 存储选中节点的map，key为节点id, value为节点对象
+const computedIsSelected = computed(() => (node: ITreeNode) => slectNodesMap.value.has(node.key)); // 是否选中节点的计算属性
 
 const computedIsExpanded = computed(() => (node: ITreeNode) => expandedSet.value.has(node.key));
 watch(
@@ -65,7 +72,19 @@ const flattenTree = computed(() => {
 });
 function handleToggleExpand(node: ITreeNode) {
     expandedSet.value.has(node.key) ? expandedSet.value.delete(node.key) : expandedSet.value.add(node.key);
-    console.log(expandedSet.value, 'expandedSet.value');
+}
+// 选择节点事件处理函数
+function handleSelectNode(node: ITreeNode) {
+    if (!props.selectable) return;
+    if (slectNodesMap.value.has(node.key)) {
+        slectNodesMap.value.delete(node.key);
+    } else {
+        if (!props.multipleSelect) slectNodesMap.value.clear();
+        slectNodesMap.value.set(node.key, node);
+    }
+    const nodes = [...slectNodesMap.value].map(([_, node]) => toRaw(node));
+    console.log(nodes, 'hhh');
+    emit('onSelectNodes', nodes);
 }
 onMounted(() => {});
 </script>
